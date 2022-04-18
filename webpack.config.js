@@ -1,6 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin
+const WebpackPwaManifest = require('webpack-pwa-manifest');
 
 module.exports = {
     // the entry point is
@@ -15,8 +16,8 @@ module.exports = {
     },
     //  - webpack will bundle that code and 'output' that bundled code to a folder that we specify
     output: {
-        filename: "[name].bundle.js",
-        path: __dirname + "/dist",
+        path: path.join(__dirname + "/dist"),
+        filename: "[name].bundle.js"
     },
     module: {
         rules: [
@@ -32,7 +33,7 @@ module.exports = {
                                 return "[path][name].[ext]"
                             },
                             // creates a folder 'assets/img' to place the images
-                            publicPath: function(url) {
+                            publicPath (url) {
                                 return url.replace("../", "/assets/")
                             }
                         }
@@ -52,6 +53,22 @@ module.exports = {
         }),
         new BundleAnalyzerPlugin({
             analyzerMode: "static", // the report outputs to an HTML file in the dist folder
+        }),
+        new WebpackPwaManifest({
+            name: "Food Event",
+            short_name: "Foodies",
+            description: "An app that allows you to view upcoming food events",
+            // specify the homepage for the PWA relative to the location of the manifest file
+            start_url: "../index.html",
+            background_color: "#01579b",
+            theme_color: "#ffffff",
+            fingerprints: false,
+            inject: false,
+            icons: [{
+                src: path.resolve("assets/img/icons/icon-512x512.png"),
+                sizes: [96, 128, 192, 256, 348, 512],
+                destination: path.join("assets", "icon")
+            }]
         })
     ],
     mode: 'development'
